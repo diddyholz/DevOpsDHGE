@@ -16,20 +16,114 @@ fs.mkdirSync(surveypath, { recursive: true });
 const dir = fs.opendirSync(surveypath);
 let dirent = dir.readSync();
 while (dirent) {
-  console.log(dirent.name);
   const data = JSON.parse(fs.readFileSync(path.join(surveypath, dirent.name), 'utf8'));
   surveys.push(data);
   dirent = dir.readSync();
 }
+dir.closeSync();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get('/survey', (req, res) => {
+  const result = [];
+  for (const survey of surveys) {
+    const temp = {...survey};
+    temp.votes = undefined;
+    result.push(temp);
+  }
+  res.send(JSON.stringify(result));
+});
+
+app.get('/survey/:id', (req, res) => {
+  const survey = surveys.find(survey => survey.id === req.params.id);
+  if (survey) {
+    survey.votes = undefined;
+    res.send(JSON.stringify(survey));
+  } else {
+    res.status(404).send('Survey not found');
+  }
+});
+
+app.post('/survey', express.json(), (req, res) => { //untested
+  const survey = req.body;
+  survey.id = uuidv4();
+  survey.votes = [];
+  surveys.push(survey);
+  fs.writeFileSync
+  (path.join(surveypath, survey.id + '.json'), JSON.stringify(survey));
+  res.send(survey.id);
+});
+
+app.put('/survey/:id', express.json(), (req, res) => {
+  const survey = surveys.find(survey => survey.id === req.params.id);
+  if (survey) {
+    survey.name = req.body.name;
+    survey.date = req.body.date;
+    survey.status = req.body.status;
+    survey.songs = req.body.songs;
+    fs.writeFileSync
+    (path.join(surveypath, survey.id + '.json'), JSON.stringify(survey));
+    survey.votes = undefined;
+    res.send(JSON.stringify(survey));
+  } else {
+    res.status(404).send('Survey not found');
+  }
+});
+
+app.delete('/survey/:id', (req, res) => {
+  const index = surveys.findIndex(survey => survey.id === req.params.id);
+  if (index !== -1) {
+    fs.unlinkSync(path.join
+    (surveypath, surveys[index].id + '.json'));
+    surveys.splice(index, 1);
+    res.status(204).send();
+  }
+  else {
+    res.status(404).send('Survey not found');
+  }
+});
+
+app.get('/result/:id', (req, res) => {
+  const survey = surveys.find(survey => survey.id === req.params.id);
+  const priorityCount = {};
+  if (survey) {
+    for(const vote of survey.votes){
+      for(const song of vote.songs){
+        if(!priorityCount[song.id]){
+          priorityCount[song.id] = 0;
+        }
+        if(song.priority === 0){
+          priorityCount[song.id]++;
+        }
+      }
+    }
+    const sortedResults = Object.entries(priorityCount)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id], index) => ({ song: id, place: index }));
+
+    const result = { result: sortedResults };
+
+    res.send(JSON.stringify(result));
+  } else {
+    res.status(404).send('Survey not found');
+  }
+});
+
+app.post('/vote', express.json(), (req, res) => {
+  const survey = surveys.find(survey => survey.id === req.body.survey);
+  if (survey) {
+    if (survey.status === 'open') {
+      survey.votes.push(req.body.vote);
+      fs.writeFileSync
+      (path.join(surveypath, survey.id + '.json'), JSON.stringify(survey));
+      res.status(204).send();
+    }
+    else{
+      res.status(403).send('Survey is closed');
+    }
+  } else {
+    res.status(404).send('Survey not found');
+  }
 });
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});
-
-app.get('/survey', (req, res) => {
-  
 });
