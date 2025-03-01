@@ -15,7 +15,7 @@ class SurveyService {
         for (let i = 0; i < songCount; i++) {
             let song = {
                 id: (Math.random() * 100000).toFixed(0).toString(),
-                title: "Song Title"
+                name: "Song Title " + i, 
             };
 
             survey.songs.push(song);
@@ -36,6 +36,15 @@ class SurveyService {
     
     async getSurvey(id) {
         return this.generateMockSurvey(id, 5);
+    }
+
+    async createVote(surveyId, vote) {
+        let request = {
+            survey: surveyId,
+            songs: vote,
+        };
+
+        return request;
     }
 }
 

@@ -6,7 +6,7 @@
 
 <template>
     <div class="survey-list">
-        <SurveyItem v-for="survey in surveys" :key="survey.id" :survey="survey" />
+        <SurveyItem v-for="survey in surveys" :key="survey.id" :survey="survey" @vote-survey="(id) => $emit('voteSurvey', id)" />
     </div>
 </template>
 
@@ -14,6 +14,7 @@
     .survey-list {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
         gap: 1rem;
     }
 </style>
