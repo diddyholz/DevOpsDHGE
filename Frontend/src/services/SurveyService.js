@@ -1,4 +1,10 @@
+const MOCK_TIMEOUT = 1000;
+
 class SurveyService {
+    timeout(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     generateMockSurvey(id, songCount) {
         let survey = {
             id: id || (Math.random() * 100000).toFixed(0).toString(),
@@ -31,11 +37,19 @@ class SurveyService {
             surveys.push(this.generateMockSurvey());
         }
 
+        await this.timeout(MOCK_TIMEOUT);
+
         return surveys;
     }
     
     async getSurvey(id) {
+        await this.timeout(MOCK_TIMEOUT);
         return this.generateMockSurvey(id, 5);
+    }
+
+    async deleteSurvey(id) {
+        await this.timeout(MOCK_TIMEOUT);
+        return;
     }
 
     async createVote(surveyId, vote) {
@@ -44,6 +58,7 @@ class SurveyService {
             songs: vote,
         };
 
+        await this.timeout(MOCK_TIMEOUT);
         return request;
     }
 }

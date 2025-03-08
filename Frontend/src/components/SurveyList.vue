@@ -6,7 +6,13 @@
 
 <template>
     <div class="survey-list">
-        <SurveyItem v-for="survey in surveys" :key="survey.id" :survey="survey" @vote-survey="(id) => $emit('voteSurvey', id)" />
+        <SurveyItem 
+            v-for="survey in surveys" 
+            :key="survey.id" 
+            :survey="survey" 
+            @vote-survey="(id) => $emit('voteSurvey', id)" 
+            @delete-survey="(id) => $emit('deleteSurvey', id)"
+            @edit-survey="(id) => $emit('editSurvey', id)" />
     </div>
 </template>
 

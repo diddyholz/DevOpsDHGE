@@ -68,22 +68,23 @@
             @dragstart="(e) => handleDragStart(e, song.id)"
             @dragover="handleDragOver"
             @drop="(e) => handleDrop(e, song.id)">
-            <b>{{ song.name }}</b>
+            <b class="ms-2">{{ song.name }}</b>
         </div>
     </div>
 </template>
 
 <style scoped>
     .song-list {
-        border-radius: 1.5rem;
+        border-radius: calc(var(--bs-border-radius) + 0.5rem);
+        padding: 0.5rem 1rem;
         background-color: rgb(230, 230, 230);
-        padding: 0.1px 1rem;
     }
 
     .song-item {
-        padding: 1rem;
+        border-radius: var(--bs-border-radius);
+        padding: 0.5rem;
         background-color: white;
-        border-radius: 0.5rem;
-        margin: 1rem 0;
+        margin: 0.5rem 0;
+        border: var(--bs-border-width) solid var(--bs-border-color);
     }
 </style>

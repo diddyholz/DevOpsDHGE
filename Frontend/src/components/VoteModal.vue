@@ -10,7 +10,15 @@
     const tmpTitle = ref('');
     const isSaving = ref(false);
 
+    function reset() {
+        currentSurvey.value = null;
+        tmpTitle.value = '';
+        isSaving.value = false;
+    }
+
     function show(surveyId, surveyTitle) {
+        reset();
+        
         tmpTitle.value = surveyTitle;
         loadSurvey(surveyId);
         modalRef.value.show();
@@ -35,7 +43,6 @@
 
         isSaving.value = true;
         await SurveyService.createVote(currentSurvey.value.id, songListRef.value.getSongVotes());
-        isSaving.value = false;
         modalRef.value.hide();
     }
 
@@ -51,7 +58,9 @@
         </template>
         <template #body>
             <template v-if="currentSurvey == null">
-                <div class="spinner-border text-primary" role="status"></div>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary m-4" role="status"></div>
+                </div>
             </template>
             <template v-else-if="currentSurvey.songs.length == 0">
                 <p>Für diese Umfrage sind noch keine Songs vorhanden</p>
