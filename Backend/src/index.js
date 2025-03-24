@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import {v4 as uuidv4} from 'uuid';
 import { Console } from 'console';
+import { get } from 'http';
 
 const configpath = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.config");
 const surveypath = path.join(configpath, 'surveys');
@@ -12,6 +13,7 @@ const PORT = 12345;
 const app = express();
 
 const surveys = [];
+
 fs.mkdirSync(surveypath, { recursive: true });
 const dir = fs.opendirSync(surveypath);
 let dirent = dir.readSync();
@@ -22,27 +24,7 @@ while (dirent) {
 }
 dir.closeSync();
 
-app.get('/survey', (req, res) => {
-  const result = [];
-  for (const survey of surveys) {
-    const temp = {...survey};
-    temp.votes = undefined;
-    result.push(temp);
-  }
-  res.send(JSON.stringify(result));
-});
-
-app.get('/survey/:id', (req, res) => {
-  const survey = surveys.find(survey => survey.id === req.params.id);
-  if (survey) {
-    survey.votes = undefined;
-    res.send(JSON.stringify(survey));
-  } else {
-    res.status(404).send('Survey not found');
-  }
-});
-
-app.post('/survey', express.json(), (req, res) => { //untested
+export function postSurvey(req, res) {
   const survey = req.body;
   survey.id = uuidv4();
   survey.votes = [];
@@ -50,9 +32,29 @@ app.post('/survey', express.json(), (req, res) => { //untested
   fs.writeFileSync
   (path.join(surveypath, survey.id + '.json'), JSON.stringify(survey));
   res.send(survey.id);
-});
+}
 
-app.put('/survey/:id', express.json(), (req, res) => {
+export function getSurvey(req, res) {
+  const result = [];
+  for (const survey of surveys) {
+    const temp = {...survey};
+    temp.votes = undefined;
+    result.push(temp);
+  }
+  res.send(JSON.stringify(result));
+}
+
+export function getSurveyId(req, res){
+  const survey = surveys.find(survey => survey.id === req.params.id);
+  if (survey) {
+    survey.votes = undefined;
+    res.send(JSON.stringify(survey));
+  } else {
+    res.status(404).send('Survey not found');
+  }
+}
+
+export function putSurveyId(req, res){
   const survey = surveys.find(survey => survey.id === req.params.id);
   if (survey) {
     survey.name = req.body.name;
@@ -66,9 +68,9 @@ app.put('/survey/:id', express.json(), (req, res) => {
   } else {
     res.status(404).send('Survey not found');
   }
-});
+}
 
-app.delete('/survey/:id', (req, res) => {
+export function deleteSurveyId(req, res){
   const index = surveys.findIndex(survey => survey.id === req.params.id);
   if (index !== -1) {
     fs.unlinkSync(path.join
@@ -79,9 +81,9 @@ app.delete('/survey/:id', (req, res) => {
   else {
     res.status(404).send('Survey not found');
   }
-});
+}
 
-app.get('/result/:id', (req, res) => {
+export function getResultId(req, res){
   const survey = surveys.find(survey => survey.id === req.params.id);
   const priorityCount = {};
   if (survey) {
@@ -105,9 +107,9 @@ app.get('/result/:id', (req, res) => {
   } else {
     res.status(404).send('Survey not found');
   }
-});
+}
 
-app.post('/vote', express.json(), (req, res) => {
+export function postVote(res, req){
   const survey = surveys.find(survey => survey.id === req.body.survey);
   if (survey) {
     if (survey.status === 'open') {
@@ -122,7 +124,21 @@ app.post('/vote', express.json(), (req, res) => {
   } else {
     res.status(404).send('Survey not found');
   }
-});
+}
+
+app.get('/survey', getSurvey);
+
+app.get('/survey/:id', getSurveyId);
+
+app.post('/survey', express.json(), postSurvey);
+
+app.put('/survey/:id', express.json(), putSurveyId);
+
+app.delete('/survey/:id', deleteSurveyId);
+
+app.get('/result/:id', getResultId);
+
+app.post('/vote', express.json(), postVote);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
