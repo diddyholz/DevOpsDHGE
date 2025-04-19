@@ -12,7 +12,8 @@
             :survey="survey" 
             @vote-survey="(id) => $emit('voteSurvey', id)" 
             @delete-survey="(id) => $emit('deleteSurvey', id)"
-            @edit-survey="(id) => $emit('editSurvey', id)" />
+            @edit-survey="(id) => $emit('editSurvey', id)"
+            @results="(id) => $emit('results', id)" />
     </div>
 </template>
 

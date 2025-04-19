@@ -48,7 +48,7 @@
         newSurvey.value.songs = newSurvey.value.songs.filter(song => song.id !== songId);
     }
 
-    function addSong(title) {
+    function addSong() {
         if (newSong.value.trim() === '') {
             return;
         }
@@ -61,6 +61,11 @@
         newSong.value = '';
     }
 
+    function isValid() {
+        return newSurvey.value.title.trim() !== '' 
+            && newSurvey.value.date.trim() !== '';
+    }
+
     function handleCancel() {
         modalRef.value.hide();
     }
@@ -71,6 +76,11 @@
         }
 
         if (isSaving.value) {
+            return;
+        }
+
+        if (!isValid()) {
+            alert('Bitte füllen Sie alle Felder aus.');
             return;
         }
 
@@ -128,7 +138,10 @@
                     </div>
                 </div>
                 <div class="song-list mb-3">
-                    <div 
+                    <div v-if="newSurvey.songs.length === 0" class="text-secondary fst-italic text-center pt-2 pb-3">
+                        Keine Songs hinzugefügt.
+                    </div>
+                    <div v-else
                         v-for="song in newSurvey.songs" 
                         :key="song.id" 
                         class="song-item d-flex align-items-center justify-content-between">
@@ -149,7 +162,7 @@
                         <button 
                             class="btn btn-primary" 
                             type="button"
-                            @click="addSong(newSong)">
+                            @click="addSong">
                             <i class="bi bi-plus"></i>
                         </button>
                     </div>

@@ -3,12 +3,14 @@ import SurveyList from '../components/SurveyList.vue'
 import SurveyService from '../services/SurveyService.js'
 import VoteModal from '../components/VoteModal.vue'
 import EditModal from '../components/EditModal.vue'
+import CreateModal from '../components/CreateModal.vue'
 
 import { useTemplateRef, ref } from 'vue'
 
 const surveys = ref(null);
 const voteModal = useTemplateRef("vote-modal");
 const editModal = useTemplateRef("edit-modal");
+const createModal = useTemplateRef("create-modal");
 
 async function handleDeleteSurvey(id) {
     // Delete the survey by id
@@ -21,6 +23,10 @@ async function handleDeleteSurvey(id) {
     finally {
         loadSurveys();
     }
+}
+
+function handleCreateSurvey() {
+    createModal.value.show();
 }
 
 function handleEditSurvey(id) {
@@ -59,6 +65,8 @@ loadSurveys();
     <div class="w-100">
         <VoteModal ref="vote-modal"></VoteModal>
         <EditModal ref="edit-modal"></EditModal>
+        <CreateModal ref="create-modal"></CreateModal>
+        
         <div>
             <h1>Umfragen</h1>
             <p>Wähle eine Umfrage aus, bei der du abstimmen möchtest.</p>
@@ -79,7 +87,7 @@ loadSurveys();
                     @edit-survey="handleEditSurvey"/>
             </template>
         </div>
-        <button class="btn btn-primary mt-5">
+        <button class="btn btn-primary mt-5" @click="handleCreateSurvey">
             Neue Umfrage
         </button>
     </div>

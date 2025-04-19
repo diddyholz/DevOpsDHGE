@@ -1,7 +1,7 @@
 <script setup>
     import { ref } from 'vue';
 
-    const emit = defineEmits(['deleteSurvey', 'voteSurvey', 'editSurvey']);
+    const emit = defineEmits(['deleteSurvey', 'voteSurvey', 'editSurvey', 'results']);
     const props = defineProps(['survey']);
     const date = new Date(props.survey?.date).toLocaleDateString();
 
@@ -19,6 +19,10 @@
     function handleEdit() {
         emit('editSurvey', props.survey.id);
     }
+    
+    function handleResults() {
+        emit('results', props.survey.id);
+    }
 </script>
 
 <template>
@@ -31,7 +35,7 @@
                 <button @click="handleVote" class="btn btn-primary">Abstimmen</button>
             </template>
             <template v-else-if="survey.status === 'closed'">
-                <button class="btn btn-success">Ergebnisse</button>
+                <button @click="handleResults" class="btn btn-success">Ergebnisse</button>
             </template>
             <button class="btn btn-secondary ms-2" @click="handleEdit">
                 <i class="bi bi-pencil"></i>
