@@ -109,11 +109,24 @@ export function getResultId(req, res){
   }
 }
 
-export function postVote(res, req){
-  const survey = surveys.find(survey => survey.id === req.body.survey);
+export function postVote(req, res){
+  const vote = req.body;
+
+  if (!vote.survey || !vote.songs) {
+    return res.status(400).send('Invalid vote data');
+  }
+
+  const survey = surveys.find(survey => survey.id === vote.survey);
   if (survey) {
     if (survey.status === 'open') {
-      survey.votes.push(req.body.vote);
+      vote.id = uuidv4();
+      vote.survey = undefined;
+
+      if (!survey.votes) {
+        survey.votes = [];
+      }
+
+      survey.votes.push(vote);
       fs.writeFileSync
       (path.join(surveypath, survey.id + '.json'), JSON.stringify(survey));
       res.status(204).send();
