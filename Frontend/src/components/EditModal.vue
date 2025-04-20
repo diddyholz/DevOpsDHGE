@@ -2,13 +2,14 @@
     import BootstrapModal from './bootstrap-wrappers/BootstrapModal.vue';
     import { useTemplateRef, ref } from 'vue';
     import SurveyService from '../services/SurveyService.js';
+    import {v4 as uuidv4} from 'uuid';
 
     const modalRef = useTemplateRef("modal");
     const currentSurvey = ref(null);
     const tmpTitle = ref('');
     const isSaving = ref(false);
     const newSurvey = ref({
-        title: '',
+        name: '',
         date: '',
         status: 'draft',
         songs: []
@@ -19,6 +20,7 @@
         { value: 'closed', text: 'Abgeschlossen', colorClass: 'danger' }
     ];
     const newSong = ref('');
+    const emit = defineEmits(['saved']);
 
     function reset() {
         currentSurvey.value = null;
@@ -37,7 +39,7 @@
     async function loadSurvey(surveyId) {
         currentSurvey.value = await SurveyService.getSurvey(surveyId);
         newSurvey.value = {
-            title: currentSurvey.value.title,
+            name: currentSurvey.value.name,
             date: currentSurvey.value.date,
             status: currentSurvey.value.status,
             songs: currentSurvey.value.songs
@@ -54,7 +56,7 @@
         }
 
         newSurvey.value.songs.push({
-            id: newSurvey.value.songs.length + 1, // TODO: Use real id
+            id: uuidv4(),
             name: newSong.value
         });
 
@@ -62,7 +64,7 @@
     }
 
     function isValid() {
-        return newSurvey.value.title.trim() !== '' 
+        return newSurvey.value.name.trim() !== '' 
             && newSurvey.value.date.trim() !== '';
     }
 
@@ -86,7 +88,13 @@
 
         isSaving.value = true;
 
-        // TODO    
+        try {
+            await SurveyService.updateSurvey(currentSurvey.value.id, newSurvey.value);
+            emit('saved');
+        } catch (error) {
+            console.error(error);
+            alert('Fehler beim Speichern der Umfrage.');
+        }
 
         modalRef.value.hide();
     }
@@ -98,7 +106,7 @@
     <BootstrapModal ref="modal" size="lg" @success="handleSave" @failure="handleCancel">
         <template #header>
             <h5 class="modal-title">
-                {{ currentSurvey?.title || tmpTitle }} bearbeiten
+                {{ currentSurvey?.name || tmpTitle }} bearbeiten
             </h5>
         </template>
         <template #body>
@@ -110,7 +118,7 @@
             <template v-else>
                 <div class="mb-3">
                     <label for="surveyTitle" class="form-label">Titel</label>
-                    <input type="text" class="form-control" id="surveyTitle" v-model="newSurvey.title">
+                    <input type="text" class="form-control" id="surveyTitle" v-model="newSurvey.name">
                 </div>
                 <div class="mb-3">
                     <label for="surveyDate" class="form-label">Datum</label>

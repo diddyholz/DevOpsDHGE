@@ -28,7 +28,7 @@
 <template>
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ survey.title }}</h5>
+        <h5 class="card-title">{{ survey.name }}</h5>
         <p class="card-text">Datum: {{ date }}</p>
         <div class="d-flex">
             <template v-if="survey.status === 'open'">

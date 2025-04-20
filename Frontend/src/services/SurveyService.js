@@ -1,4 +1,5 @@
 const MOCK_TIMEOUT = 1000;
+const API_HOST = "http://localhost:12345";
 
 class SurveyService {
     timeout(ms) {
@@ -8,7 +9,7 @@ class SurveyService {
     generateMockSurvey(id, songCount) {
         let survey = {
             id: id || (Math.random() * 100000).toFixed(0).toString(),
-            title: "Survey Title",
+            name: "Survey Title",
             date: "2021-01-01",
             status: "open",
             songs: []
@@ -31,35 +32,79 @@ class SurveyService {
     }
     
     async getSurveys() {
-        let surveys = [];
+        let response = await fetch(`${API_HOST}/survey`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
 
-        for (let i = 0; i < 10; i++) {
-            surveys.push(this.generateMockSurvey());
-        }
-
-        await this.timeout(MOCK_TIMEOUT);
-
-        return surveys;
+        return await response.json();
     }
     
     async getSurvey(id) {
-        await this.timeout(MOCK_TIMEOUT);
-        return this.generateMockSurvey(id, 5);
+        let response = await fetch(`${API_HOST}/survey/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        return await response.json();
     }
 
     async deleteSurvey(id) {
-        await this.timeout(MOCK_TIMEOUT);
-        return;
+        await fetch(`${API_HOST}/survey/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
     }
 
-    async createVote(surveyId, vote) {
-        let request = {
+    async createSurvey(survey) {
+        await fetch(`${API_HOST}/survey`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(survey)
+        });
+    }
+
+    async updateSurvey(surveyId, survey) {
+        await fetch(`${API_HOST}/survey/${surveyId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(survey)
+        });
+    }
+
+    async createVote(surveyId, songs) {
+        let vote = {
             survey: surveyId,
-            songs: vote,
+            songs: songs
+        };
+
+        await fetch(`${API_HOST}/vote`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(vote)
+        });
+    }
+
+    async getResults(surveyId) {
+        let results = {
+            survey: surveyId,
+            songs: []
         };
 
         await this.timeout(MOCK_TIMEOUT);
-        return request;
+        return results;
     }
 }
 

@@ -38,8 +38,8 @@
         }
 
         // Get indexes of the song beeing dragged and the song beeing dropped on
-        const draggedIndex = vote.value.findIndex(song => song.id === draggedId);
-        const droppedIndex = vote.value.findIndex(song => song.id === id);
+        const draggedIndex = vote.value.findIndex(song => song.id == draggedId);
+        const droppedIndex = vote.value.findIndex(song => song.id == id);
 
         // Update priority of dragged song and all other songs after/before it
         vote.value[draggedIndex].priority = droppedIndex;

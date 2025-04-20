@@ -2,11 +2,12 @@
     import BootstrapModal from './bootstrap-wrappers/BootstrapModal.vue';
     import { useTemplateRef, ref } from 'vue';
     import SurveyService from '../services/SurveyService.js';
+    import {v4 as uuidv4} from 'uuid';
 
     const modalRef = useTemplateRef("modal");
     const isSaving = ref(false);
     const newSurvey = ref({
-        title: '',
+        name: '',
         date: '',
         status: 'draft',
         songs: []
@@ -17,11 +18,12 @@
         { value: 'closed', text: 'Abgeschlossen', colorClass: 'danger' }
     ];
     const newSong = ref('');
+    const emit = defineEmits(['saved']);
 
     function reset() {
         isSaving.value = false;
         newSurvey.value = {
-            title: '',
+            name: '',
             date: '',
             status: 'draft',
             songs: []
@@ -44,7 +46,7 @@
         }
 
         newSurvey.value.songs.push({
-            id: newSurvey.value.songs.length + 1, // TODO: Use real id
+            id: uuidv4(),
             name: newSong.value
         });
 
@@ -52,7 +54,7 @@
     }
 
     function isValid() {
-        return newSurvey.value.title.trim() !== '' 
+        return newSurvey.value.name.trim() !== '' 
             && newSurvey.value.date.trim() !== '';
     }
 
@@ -72,7 +74,13 @@
 
         isSaving.value = true;
 
-        // TODO    
+        try {
+            await SurveyService.createSurvey(newSurvey.value);
+            emit('saved');
+        } catch (error) {
+            console.error(error);
+            alert('Fehler beim Erstellen der Umfrage.');
+        }
 
         modalRef.value.hide();
     }
@@ -90,7 +98,7 @@
         <template #body>
             <div class="mb-3">
                 <label for="surveyTitle" class="form-label">Titel</label>
-                <input type="text" class="form-control" id="surveyTitle" v-model="newSurvey.title">
+                <input type="text" class="form-control" id="surveyTitle" v-model="newSurvey.name">
             </div>
             <div class="mb-3">
                 <label for="surveyDate" class="form-label">Datum</label>

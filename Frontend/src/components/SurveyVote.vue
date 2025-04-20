@@ -5,7 +5,7 @@
 <template>
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ survey.title }}</h5>
+        <h5 class="card-title">{{ survey.name }}</h5>
         <p class="card-text">Datum: {{ survey.date }}</p>
         <template v-if="survey.status === 'open'">
             <a href="#" class="btn btn-primary">Abstimmen</a>

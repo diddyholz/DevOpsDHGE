@@ -38,7 +38,7 @@ function handleEditSurvey(id) {
         return;
     }
     
-    editModal.value.show(survey, survey.title);
+    editModal.value.show(id, survey.name);
 }
 
 function handleVoteSurvey(id) {
@@ -50,7 +50,12 @@ function handleVoteSurvey(id) {
         return;
     }
     
-    voteModal.value.show(survey, survey.title);
+    voteModal.value.show(id, survey.name);
+}
+
+function handleSaved() {
+    // Reload the surveys after saving
+    loadSurveys();
 }
 
 async function loadSurveys() {
@@ -64,8 +69,8 @@ loadSurveys();
 <template>
     <div class="w-100">
         <VoteModal ref="vote-modal"></VoteModal>
-        <EditModal ref="edit-modal"></EditModal>
-        <CreateModal ref="create-modal"></CreateModal>
+        <EditModal ref="edit-modal" @saved="handleSaved"></EditModal>
+        <CreateModal ref="create-modal" @saved="handleSaved"></CreateModal>
         
         <div>
             <h1>Umfragen</h1>

@@ -53,7 +53,7 @@
     <BootstrapModal ref="modal" size="lg" @success="handleSave" @failure="handleCancel">
         <template #header>
             <h5 class="modal-title">
-                {{ currentSurvey?.title || tmpTitle }}
+                {{ currentSurvey?.name || tmpTitle }}
             </h5>
         </template>
         <template #body>
