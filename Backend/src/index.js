@@ -126,6 +126,18 @@ export function postVote(res, req){
   }
 }
 
+app.use(function(req, res, next) {
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    
+    // Set content type
+    res.setHeader('Content-Type', 'application/json');
+    next();
+});
+
 app.get('/survey', getSurvey);
 
 app.get('/survey/:id', getSurveyId);
