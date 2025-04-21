@@ -4,6 +4,7 @@ import SurveyService from '../services/SurveyService.js'
 import VoteModal from '../components/VoteModal.vue'
 import EditModal from '../components/EditModal.vue'
 import CreateModal from '../components/CreateModal.vue'
+import ResultModal from '../components/ResultModal.vue'
 
 import { useTemplateRef, ref } from 'vue'
 
@@ -11,6 +12,7 @@ const surveys = ref(null);
 const voteModal = useTemplateRef("vote-modal");
 const editModal = useTemplateRef("edit-modal");
 const createModal = useTemplateRef("create-modal");
+const resultModal = useTemplateRef("result-modal");
 
 async function handleDeleteSurvey(id) {
     // Delete the survey by id
@@ -53,6 +55,18 @@ function handleVoteSurvey(id) {
     voteModal.value.show(id, survey.name);
 }
 
+function handleResults(id) {
+    // Get the survey by id
+    const survey = surveys.value.find(s => s.id === id);
+
+    if (survey == null) {
+        console.error(`Survey with id ${id} not found.`);
+        return;
+    }
+    
+    resultModal.value.show(id, survey.name);
+}
+
 function handleSaved() {
     // Reload the surveys after saving
     loadSurveys();
@@ -71,6 +85,7 @@ loadSurveys();
         <VoteModal ref="vote-modal"></VoteModal>
         <EditModal ref="edit-modal" @saved="handleSaved"></EditModal>
         <CreateModal ref="create-modal" @saved="handleSaved"></CreateModal>
+        <ResultModal ref="result-modal"></ResultModal>
         
         <div>
             <h1>Umfragen</h1>
@@ -89,7 +104,8 @@ loadSurveys();
                     :surveys="surveys" 
                     @vote-survey="handleVoteSurvey" 
                     @delete-survey="handleDeleteSurvey"
-                    @edit-survey="handleEditSurvey"/>
+                    @edit-survey="handleEditSurvey"
+                    @results="handleResults"/>
             </template>
         </div>
         <button class="btn btn-primary mt-5" @click="handleCreateSurvey">

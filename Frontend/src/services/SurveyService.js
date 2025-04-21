@@ -1,5 +1,19 @@
 const MOCK_TIMEOUT = 1000;
-const API_HOST = "http://localhost:12345";
+const API_PORT = 12345;
+const API_HOST = getAPIHost();
+
+function getAPIHost() {
+    let url = window.location.origin;
+    let port = window.location.port;
+
+    // Remove the port from the URL
+    url = url.replace(`:${port}`, '');
+
+    // Add the API port
+    url = `${url}:${API_PORT}`;
+    
+    return url;
+}
 
 class SurveyService {
     timeout(ms) {
@@ -98,13 +112,20 @@ class SurveyService {
     }
 
     async getResults(surveyId) {
-        let results = {
-            survey: surveyId,
-            songs: []
-        };
+        let results = [
+            { song: "1", place: 0},
+            { song: "2", place: 1},
+            { song: "3", place: 2},
+            { song: "4", place: 3},
+            { song: "5", place: 4},
+        ];
 
         await this.timeout(MOCK_TIMEOUT);
         return results;
+    }
+
+    sortResults(results) {
+        return results.sort((a, b) => a.place - b.place);
     }
 }
 
