@@ -4,7 +4,7 @@ import fs from 'fs';
 import {v4 as uuidv4} from 'uuid';
 import { Console } from 'console';
 import { get } from 'http';
-import fetch from 'undici';
+import { fetch } from 'undici';
 
 
 const configpath = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.config");
@@ -51,8 +51,9 @@ export function getSurvey(req, res) {
 export function getSurveyId(req, res){
   const survey = surveys.find(survey => survey.id === req.params.id);
   if (survey) {
-    survey.votes = undefined;
-    res.send(JSON.stringify(survey));
+    const temp = {...survey};
+    temp.votes = undefined;
+    res.send(JSON.stringify(temp));
   } else {
     res.status(404).send('Survey not found');
   }
@@ -61,13 +62,42 @@ export function getSurveyId(req, res){
 export function putSurveyId(req, res){
   const survey = surveys.find(survey => survey.id === req.params.id);
   if (survey) {
-    survey.name = req.body.name;
-    survey.date = req.body.date;
-    survey.status = req.body.status;
-    survey.songs = req.body.songs;
+    if (req.body.name) {
+      survey.name = req.body.name;
+    }
+
+    if (req.body.date) {
+      survey.date = req.body.date;
+    }
+
+    if (req.body.status) {
+      survey.status = req.body.status;
+    }
+
+    if (req.body.songs) {
+      let same = true;
+      // Check if songs are actually different
+      if (survey.songs.length != req.body.songs.length) {
+        same = false;
+      } 
+
+      for (let song of survey.songs) {
+        const found = req.body.songs.find(s => s.name === song.name);
+       
+        if (!found) {
+          same = false;
+          break;
+        }
+      }
+
+      if (!same) {
+        survey.songs = req.body.songs;
+        survey.votes = [];
+      }
+    }
+
     fs.writeFileSync
     (path.join(surveypath, survey.id + '.json'), JSON.stringify(survey));
-    survey.votes = undefined;
     res.send(JSON.stringify(survey));
   } else {
     res.status(404).send('Survey not found');
@@ -90,9 +120,18 @@ export function deleteSurveyId(req, res){
 export async function getResultId(req, res){
   const survey = surveys.find(survey => survey.id === req.params.id);
   if (survey){
+    if (!survey.votes) {
+      res.status(400).send('No votes found');
+      return;
+    }
+
     try{
       const response = await fetch(SURVEY_EVALUATION, {
+        method: 'POST',
         body: JSON.stringify({votes: survey.votes}),
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       if(!response.ok){
         throw new Error('Network response was not ok');
@@ -101,6 +140,7 @@ export async function getResultId(req, res){
       res.send(JSON.stringify(data));
     }
     catch (error) {
+      console.error('Error fetching survey evaluation:', error);
       res.status(500).send('Internal Server Error');
     }
   }
@@ -145,9 +185,7 @@ app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     res.setHeader('Access-Control-Allow-Credentials', true);
-    
-    // Set content type
-    res.setHeader('Content-Type', 'application/json');
+
     next();
 });
 

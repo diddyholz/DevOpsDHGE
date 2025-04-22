@@ -26,7 +26,7 @@
         let computedResult = [];
 
         for (let song of results) {
-            let songData = survey.songs.find(s => s.id == song.id);
+            let songData = survey.songs.find(s => s.id == song.song);
             let songName = "Unbekannt";
 
             if (songData) {

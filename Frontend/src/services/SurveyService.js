@@ -112,16 +112,24 @@ class SurveyService {
     }
 
     async getResults(surveyId) {
-        let results = [
-            { song: "1", place: 0},
-            { song: "2", place: 1},
-            { song: "3", place: 2},
-            { song: "4", place: 3},
-            { song: "5", place: 4},
-        ];
+        // let results = [
+        //     { song: "1", place: 0},
+        //     { song: "2", place: 1},
+        //     { song: "3", place: 2},
+        //     { song: "4", place: 3},
+        //     { song: "5", place: 4},
+        // ];
 
-        await this.timeout(MOCK_TIMEOUT);
-        return results;
+        // await this.timeout(MOCK_TIMEOUT);
+
+        let response = await fetch(`${API_HOST}/result/${surveyId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        return await response.json();
     }
 
     sortResults(results) {
