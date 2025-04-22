@@ -4,6 +4,8 @@ import fs from 'fs';
 import {v4 as uuidv4} from 'uuid';
 import { Console } from 'console';
 import { get } from 'http';
+import fetch from 'undici';
+
 
 const configpath = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.config");
 const surveypath = path.join(configpath, 'surveys');
@@ -13,6 +15,8 @@ const PORT = 12345;
 const app = express();
 
 const surveys = [];
+
+const SURVEY_EVALUATION = "http://localhost:12346/";
 
 fs.mkdirSync(surveypath, { recursive: true });
 const dir = fs.opendirSync(surveypath);
@@ -83,28 +87,24 @@ export function deleteSurveyId(req, res){
   }
 }
 
-export function getResultId(req, res){
+export async function getResultId(req, res){
   const survey = surveys.find(survey => survey.id === req.params.id);
-  const priorityCount = {};
-  if (survey) {
-    for(const vote of survey.votes){
-      for(const song of vote.songs){
-        if(!priorityCount[song.id]){
-          priorityCount[song.id] = 0;
-        }
-        if(song.priority === 0){
-          priorityCount[song.id]++;
-        }
+  if (survey){
+    try{
+      const response = await fetch(SURVEY_EVALUATION, {
+        body: JSON.stringify({votes: survey.votes}),
+      });
+      if(!response.ok){
+        throw new Error('Network response was not ok');
       }
+      const data = await response.json();	
+      res.send(JSON.stringify(data));
     }
-    const sortedResults = Object.entries(priorityCount)
-    .sort((a, b) => b[1] - a[1])
-    .map(([id], index) => ({ song: id, place: index }));
-
-    const result = { result: sortedResults };
-
-    res.send(JSON.stringify(result));
-  } else {
+    catch (error) {
+      res.status(500).send('Internal Server Error');
+    }
+  }
+  else{
     res.status(404).send('Survey not found');
   }
 }
