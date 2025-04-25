@@ -37,6 +37,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: "{{defaultContext}}:${{ matrix.service }}"
+          context: "{{defaultContext}}:${{ matrix.service.dir }}"
           push: true
-          tags: diddyholz/${{ matrix.service }}:latest
+          tags: diddyholz/${{ matrix.service.tag }}:latest
