@@ -1,0 +1,31 @@
+services:
+  router:
+    image: nginx:stable-alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+      - surveyevaluation
+
+  frontend:
+    image: frontend:latest
+    expose:
+      - "80"
+
+  backend:
+    image: backend:latest
+    volumes:
+      - survey-data:/data
+    expose:
+      - "12345"
+
+  surveyevaluation:
+    image: surveyevaluation:latest
+    expose:
+      - "12346"
+
+volumes:
+  survey-data:

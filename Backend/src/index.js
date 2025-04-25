@@ -6,17 +6,15 @@ import { Console } from 'console';
 import { get } from 'http';
 import { fetch } from 'undici';
 
-
-const configpath = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.config");
+const configpath = "/data";
 const surveypath = path.join(configpath, 'surveys');
 
 const PORT = 12345;
+const SURVEY_EVALUATION = "http://surveyevaluation:12346";
 
 const app = express();
 
 const surveys = [];
-
-const SURVEY_EVALUATION = "http://localhost:12346/";
 
 fs.mkdirSync(surveypath, { recursive: true });
 const dir = fs.opendirSync(surveypath);
@@ -203,6 +201,6 @@ app.get('/result/:id', getResultId);
 
 app.post('/vote', express.json(), postVote);
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });

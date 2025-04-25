@@ -26,3 +26,17 @@ jobs:
       - name: Run tests
         working-directory: ${{ matrix.service }}
         run: npm test
+  docker:
+    name: Build & Publish Docker images
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        service: [ Backend, SurveyEvaluation ]
+    steps:
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: "{{defaultContext}}:${{ matrix.service }}"
+          push: true
+          tags: diddyholz/${{ matrix.service }}:latest
