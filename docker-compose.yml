@@ -11,19 +11,19 @@ services:
       - surveyevaluation
 
   frontend:
-    image: frontend:latest
+    image: diddyholz/dhge-devops-frontend:latest
     expose:
       - "80"
 
   backend:
-    image: backend:latest
+    image: diddyholz/dhge-devops-backend:latest
     volumes:
       - survey-data:/data
     expose:
       - "12345"
 
   surveyevaluation:
-    image: surveyevaluation:latest
+    image: diddyholz/dhge-devops-surveyevaluation:latest
     expose:
       - "12346"
 

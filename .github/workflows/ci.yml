@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: 
-        service: [ Backend, SurveyEvaluation ]
+        service: [ {dir: Backend, tag: dhge-devops-backend}, {dir: Frontend, tag: dhge-devops-frontend}, {dir: SurveyEvaluation, tag: dhge-devops-surveyevaluation} ]
     steps:
       - name: Build and push
         uses: docker/build-push-action@v6
