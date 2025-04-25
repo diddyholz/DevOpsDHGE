@@ -13,4 +13,7 @@ VOLUME [ "/data" ]
 # Expose backend port
 EXPOSE 12345
 
+# Set config path
+ENV CONFIG_PATH=/data
+
 CMD ["npm", "start"]

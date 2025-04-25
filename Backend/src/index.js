@@ -6,7 +6,14 @@ import { Console } from 'console';
 import { get } from 'http';
 import { fetch } from 'undici';
 
-const configpath = "/data";
+let configpath;
+
+if (process.env.CONFIG_PATH) {
+    configpath = process.env.CONFIG_PATH;
+} else {
+    configpath = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.config");
+}
+
 const surveypath = path.join(configpath, 'surveys');
 
 const PORT = 12345;
