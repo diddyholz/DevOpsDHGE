@@ -16,3 +16,5 @@ Bei jedem Push oder gemergten Pull Request wird automatisch eine CI/CD Pipeline 
 1. Entweder gesamtes Repo, oder [docker-compose.yml](/docker-compose.yml) und [nginx.conf](/nginx.conf) clonen
 2. Im Hauptverzeichnis der Repo `docker compose up -d` ausführen
 3. Die Anwendung ist unter `localhost` verfügbar
+
+**Hinweis:** Bei Änderungen an den Images muss vor Schritt 2 `docker compose pull` ausgeführt werden!
