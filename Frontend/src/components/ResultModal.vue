@@ -63,6 +63,11 @@
                     <div class="spinner-border text-primary m-4" role="status"></div>
                 </div>
             </template>
+            <template v-else-if="surveyResults.length == 0">
+                <p class="text-secondary fst-italic text-center mt-3">
+                    Es gibt noch keine Ergebnisse für diese Umfrage
+                </p>
+            </template>
             <template v-else>
                 <p>Das Ergebniss der Umfrage lautet:</p>
                 <div class="ms-3">

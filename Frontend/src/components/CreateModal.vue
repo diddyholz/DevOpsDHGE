@@ -53,6 +53,13 @@
         newSong.value = '';
     }
 
+    function setSurveyStatus(event, status) {
+        newSurvey.value.status = status;
+
+        // Remove the 'show' class from the dropdown menu
+        event.currentTarget.parentElement.parentElement.classList.remove('show');
+    }
+
     function isValid() {
         return newSurvey.value.name.trim() !== '' 
             && newSurvey.value.date.trim() !== '';
@@ -118,7 +125,7 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li v-for="option in statusOptions" :key="option.value">
-                            <a class="dropdown-item" @click="newSurvey.status = option.value" href="#">
+                            <a class="dropdown-item" @click="setSurveyStatus($event, option.value)" href="#">
                                 {{ option.text }}
                             </a>
                         </li>

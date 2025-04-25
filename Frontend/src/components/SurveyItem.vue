@@ -34,6 +34,9 @@
             <template v-if="survey.status === 'open'">
                 <button @click="handleVote" class="btn btn-primary">Abstimmen</button>
             </template>
+            <template v-else-if="survey.status === 'draft'">
+                <button class="btn btn-primary" disabled>Abstimmen</button>
+            </template>
             <template v-else-if="survey.status === 'closed'">
                 <button @click="handleResults" class="btn btn-success">Ergebnisse</button>
             </template>
