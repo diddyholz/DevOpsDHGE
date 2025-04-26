@@ -1,5 +1,3 @@
-//import * as app from '../index.js';
-
 import * as app from '../index.js';
 
 function createMockReq(body = {}, params = {}) {
