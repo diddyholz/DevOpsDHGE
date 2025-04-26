@@ -1,6 +1,10 @@
 # Liedumfrage DevOps Projekt
 ## Informationen
-- TODO
+Dieses Projekt stellt eine Website dar, mit welcher Umfragen erstellt, bearbeitet, ausgefüllt und ausgewertet werden können.
+Das Erstellen der Umfragen findet über einen Button auf der Hauptseite statt.
+Hier öffnet sich ein Fenster, in welchem der Umfrage ein Name, ein Datum und ein Status gegeben werden muss. Der Status kann hier entweder Offen, Geschlossen oder Entwurf sein.
+Es können weiterhin Songtitel eingegeben werden, welche dann in der Abstimmung nach präferenz geordnet werden können.
+Das Ordnen der Lieder geschieht indem die Umfrage ausgefüllt wird. Offene Umfragen können auf der Hauptseite gesehen und über den Button "Abstimmen" ausgefüllt werden. Hier werden die Songs durch Verschieben der Labels angeordnet. Nachdem die Umfrage von mehreren Benutzern ausgefüllt wurde, kann sie geschlossen und ausgewertet werden. Die Auswertung der Songs geschieht in einem Microservice. Es wird einer Rangfolge der beliebtesten Lieder ausgegeben.
 ## Aufbau
 - TODO
 ## CI/CD
